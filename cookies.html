@@ -24,16 +24,7 @@
 <link rel="stylesheet" href="assets/style.css">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
-<!-- Travelpayouts Drive -->
-<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1" data-cmp-ab="2">
-  (function () {
-      var script = document.createElement("script");
-      script.async = 1;
-      script.setAttribute("data-cmp-ab","2");
-      script.src = 'https://tpembars.com/NTg1MDkx.js?t=585091';
-      document.head.appendChild(script);
-  })();
-</script>
+<script src="assets/cookies.js" defer></script>
 </head>
 <body>
 <header class="cabecera">
@@ -70,14 +61,29 @@
 <main>
 
 <h2>Qué son las cookies</h2>
-<p>Pequeños archivos que el navegador almacena para recordar información sobre tu visita.</p>
-<h2>Cookies de este sitio</h2>
-<p>El sitio en sí no instala cookies propias. Los servicios de terceros que se integren
-(analítica, AdSense, redes de afiliación) pueden instalar cookies para medir visitas, mostrar
-publicidad o atribuir reservas. Antes de activar dichos servicios se implementará el
-correspondiente banner de consentimiento.</p>
-<h2>Cómo desactivarlas</h2>
-<p>Podéis configurar o bloquear las cookies desde las opciones de vuestro navegador.</p>
+<p>Pequeños archivos que el navegador guarda para recordar información sobre vuestra visita.
+Algunas las necesita la propia página para funcionar; otras las instalan servicios externos.</p>
+
+<h2>Qué usa este blog</h2>
+<p>El blog <strong>no instala cookies propias de seguimiento</strong> ni mide vuestras visitas
+por su cuenta. Lo único que guarda en vuestro navegador es la decisión que toméis sobre este
+aviso, para no volver a preguntaros en cada página.</p>
+<div class="tabla-envoltura"><table>
+<thead><tr><th>Qué es</th><th>Quién la pone</th><th>Para qué</th><th>Cuánto dura</th></tr></thead>
+<tbody>
+<tr><td><code>mef-cookies</code></td><td>Este blog</td><td>Recordar si aceptasteis o rechazasteis. No identifica a nadie ni sale de vuestro navegador</td><td>6 meses</td></tr>
+<tr><td>Cookies de Travelpayouts</td><td>Travelpayouts (red de afiliación)</td><td>Atribuir una reserva al blog si llegáis a ella desde uno de nuestros enlaces, para que recibamos la comisión</td><td>Según su propia política</td></tr>
+</tbody>
+</table></div>
+<p>Las cookies de Travelpayouts <strong>solo se cargan si pulsáis «Aceptar»</strong>. Si rechazáis
+o no respondéis, ese servicio no llega a activarse y el blog funciona exactamente igual: todo el
+contenido, los mapas y la audioguía siguen disponibles.</p>
+
+<h2>Cambiar de opinión</h2>
+<p>Podéis revisar vuestra decisión cuando queráis, y retirarla es tan sencillo como darla:</p>
+<p><button type="button" class="btn-afiliado" data-cookies="cambiar">Configurar mis cookies</button></p>
+<p>También podéis bloquear o borrar las cookies desde las opciones de vuestro navegador, lo que
+funciona para cualquier web, no solo para esta.</p>
 <h2>Contacto</h2>
 <p>Responsable: <strong>Sergio Castaño</strong> · <a href="mailto:viajaramaltaenfamilia@gmail.com">viajaramaltaenfamilia@gmail.com</a></p>
 
@@ -119,6 +125,7 @@ correspondiente banner de consentimiento.</p>
         <li><a href="aviso-legal.html">Aviso legal</a></li>
         <li><a href="privacidad.html">Política de privacidad</a></li>
         <li><a href="cookies.html">Política de cookies</a></li>
+        <li><a href="#" data-cookies="cambiar">Configurar cookies</a></li>
       </ul>
     </div>
   </div>
