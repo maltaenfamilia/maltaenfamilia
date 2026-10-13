@@ -511,3 +511,64 @@ tbody tr:nth-child(even) { background: var(--caliza); }
   overflow-wrap: anywhere;
   display: inline-block;
 }
+
+/* ---------- Banner de consentimiento de cookies ----------
+   Aceptar y rechazar tienen el mismo peso visual y están al
+   mismo nivel: es requisito del RGPD, no una preferencia. */
+.banner-cookies {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 200;
+  background: var(--blanco);
+  border-top: 5px solid;
+  border-image: linear-gradient(to right,
+      var(--luzzu-azul) 0 33.3%,
+      var(--luzzu-amarillo) 33.3% 66.6%,
+      var(--luzzu-rojo) 66.6% 100%) 1;
+  box-shadow: 0 -6px 24px rgba(8, 48, 73, .18);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  animation: bc-entra .25s ease-out;
+}
+@keyframes bc-entra { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .banner-cookies { animation: none; } }
+
+.bc-inner {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.bc-texto {
+  flex: 1 1 320px;
+  font-size: .92rem;
+  line-height: 1.55;
+  color: var(--tinta);
+}
+.bc-texto a { color: var(--mar); }
+
+.bc-botones { display: flex; gap: .6rem; flex: none; }
+.bc-btn {
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: .6rem 1.5rem;
+  cursor: pointer;
+  border: 2px solid var(--mar);
+  min-width: 118px;
+}
+.bc-aceptar { background: var(--mar); color: var(--blanco); }
+.bc-aceptar:hover { background: var(--mar-osc); border-color: var(--mar-osc); }
+.bc-rechazar { background: var(--blanco); color: var(--mar); }
+.bc-rechazar:hover { background: var(--caliza); }
+.bc-btn:focus-visible { outline: 3px solid var(--luzzu-amarillo); outline-offset: 2px; }
+
+@media (max-width: 620px) {
+  .bc-inner { padding: .9rem 1rem; gap: .8rem; }
+  .bc-botones { width: 100%; }
+  .bc-btn { flex: 1; min-width: 0; padding: .65rem .8rem; }
+}
+@media print { .banner-cookies { display: none; } }
