@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Audioguía de las Tres Ciudades · Malta en Familia</title>
+<meta name="description" content="Audioguía gratuita a pie por Birgu, Senglea y Bormla, con narración por voz. Funciona en el móvil y sin conexión.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --caliza:#F6ECD6; --caliza-osc:#EEDDB8; --caliza-borde:#D9C28E;
+ --tinta:#1C2830; --tinta-suave:#45565F; --mar:#0A5C8C; --mar-osc:#083049;
+ --azul:#1C86C8; --amarillo:#F5A800; --rojo:#CF142B; --blanco:#FDFBF6;
+ padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+ box-sizing:border-box;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--caliza);color:var(--tinta);
+ font-family:"Figtree",system-ui,sans-serif;line-height:1.6}
+h1,h2,h3{font-family:"Marcellus",Georgia,serif;font-weight:400;color:var(--mar-osc);line-height:1.2}
+a{color:var(--mar)}
+header{background:var(--mar-osc);color:var(--blanco);padding:1rem 1.2rem}
+header h1{color:var(--blanco);margin:0;font-size:1.4rem}
+header p{margin:.3rem 0 0;font-size:.9rem;color:#B9D2E0}
+.franja{height:6px;background:linear-gradient(to right,var(--azul) 0 33.3%,var(--amarillo) 33.3% 66.6%,var(--rojo) 66.6% 100%)}
+main{max-width:760px;margin:0 auto;padding:1.2rem}
+.aviso{background:#E3EEF4;border-left:6px solid var(--azul);border-radius:0 10px 10px 0;
+ padding:.8rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.parada{background:var(--blanco);border:1px solid var(--caliza-borde);border-top:5px solid var(--mar);
+ border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem}
+.parada.activa{border-top-color:var(--amarillo);box-shadow:0 6px 18px rgba(8,48,73,.14)}
+.parada h2{font-size:1.15rem;margin:0 0 .2rem;display:flex;align-items:center;gap:.5rem}
+.num{background:var(--mar);color:var(--blanco);width:30px;height:30px;border-radius:50%;
+ display:inline-flex;align-items:center;justify-content:center;font-family:"Figtree";font-size:.95rem;font-weight:700;flex:none}
+.parada.activa .num{background:var(--amarillo);color:var(--mar-osc)}
+.meta{font-size:.85rem;color:var(--tinta-suave);margin:0 0 .6rem}
+.texto{margin:.5rem 0}
+.controles{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
+button{font-family:inherit;font-size:.95rem;font-weight:600;border:none;border-radius:999px;
+ padding:.55rem 1.1rem;cursor:pointer}
+.b-play{background:var(--rojo);color:#fff}
+.b-sec{background:var(--mar);color:#fff}
+.b-gris{background:var(--caliza-osc);color:var(--tinta)}
+button:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+.barra{position:sticky;bottom:0;background:var(--mar-osc);color:#fff;padding:.7rem 1rem;
+ display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;
+ padding-bottom:calc(.7rem + env(safe-area-inset-bottom,0px))}
+.barra span{font-size:.9rem}
+.pie{text-align:center;font-size:.85rem;color:var(--tinta-suave);padding:1.5rem 1rem}
+.sin-voz{display:none;background:#FBE9E7;border-left:6px solid var(--rojo);padding:.8rem 1rem;
+ border-radius:0 10px 10px 0;margin-bottom:1rem;font-size:.95rem}
+</style>
+</head>
+<body>
+<header>
+  <h1>Audioguía de las Tres Ciudades</h1>
+  <p>Birgu · Senglea · Bormla — un paseo de unas 2 horas</p>
+</header>
+<div class="franja"></div>
+
+<main>
+  <div class="sin-voz" id="sinVoz">
+    Vuestro navegador no permite la lectura por voz. Podéis seguir la audioguía leyendo el texto
+    de cada parada.
+  </div>
+
+  <div class="aviso">
+    <strong>Cómo usarla:</strong> pulsad «Escuchar» en cada parada y el móvil os narrará la
+    explicación. Funciona sin conexión una vez cargada la página, así que podéis guardarla en
+    favoritos antes de salir. Subid el volumen o usad auriculares: en los muelles hay viento.
+  </div>
+
+  <div id="paradas"></div>
+
+  <div class="pie">
+    Audioguía gratuita de <a href="../index.html">Malta en Familia</a> · © 2026
+  </div>
+</main>
+
+<div class="barra">
+  <button class="b-gris" id="anterior">‹ Anterior</button>
+  <span id="indicador">Parada 1 de 8</span>
+  <button class="b-gris" id="siguiente">Siguiente ›</button>
+  <button class="b-sec" id="parar">Detener voz</button>
+</div>
+
+<script>
+const PARADAS = [
+ { t:"Ferry de La Valeta a Birgu",
+   m:"Punto de partida · 5 minutos de travesía",
+   x:"Empezamos cruzando el Gran Puerto. Desde el agua entenderéis por qué este puerto natural decidió la historia de Malta: una lengua de roca protegida, profunda y fácil de defender. Enfrente tenéis las tres penínsulas fortificadas donde los Caballeros de San Juan se instalaron mucho antes de construir La Valeta. Si tenéis ocasión, volved en dgħajsa, el bote tradicional de madera pintado de colores: cuesta unos tres euros y es una experiencia en sí misma." },
+ { t:"Marina de Birgu",
+   m:"Vittoriosa Waterfront",
+   x:"Al desembarcar os recibe una hilera de palacios del siglo dieciocho que fueron almacenes de la Orden y hoy son restaurantes con terraza. Delante, la marina de yates. Esta mezcla de piedra dorada y barcos de lujo resume bastante bien la Malta de hoy. Caminad hacia el fondo, donde la calle empieza a subir." },
+ { t:"Fort St. Angelo",
+   m:"El corazón del Gran Asedio",
+   x:"Este fuerte es el punto más antiguo y más importante de las Tres Ciudades. Aquí resistió el Gran Maestre La Valette durante el Gran Asedio de mil quinientos sesenta y cinco, cuando el imperio otomano intentó tomar la isla con una flota inmensa. Los Caballeros aguantaron cuatro meses. Ese asedio cambió el Mediterráneo, y de su victoria nació la ciudad de La Valeta, al otro lado del agua. Fijaos en el grosor de los muros y en cómo el fuerte aprovecha la roca: no está construido sobre el terreno, está tallado con él." },
+ { t:"El Collachio",
+   m:"Las calles de los Caballeros",
+   x:"Entrad en el laberinto. Este barrio conserva las casas donde vivían los Caballeros antes de la mudanza a La Valeta, y es de las pocas zonas de Malta donde la trama medieval sobrevivió a los bombardeos de la Segunda Guerra Mundial. Buscad los escudos tallados sobre las puertas, las esquinas con hornacinas y las calles tan estrechas que el sol solo entra al mediodía. No hay que seguir ninguna ruta concreta: perderse es el plan." },
+ { t:"Iglesia de San Lorenzo",
+   m:"Birgu",
+   x:"Fue la iglesia conventual de la Orden antes de que se construyera la Concatedral de San Juan. Su cúpula domina el perfil de Birgu que se ve desde La Valeta. Si está abierta, entrad: el contraste entre la sobriedad de la piedra por fuera y el barroco del interior es muy maltés." },
+ { t:"Senglea y el Gardjola Garden",
+   m:"El mirador del ojo y la oreja",
+   x:"Cruzad a la península vecina y subid, porque merece la pena. En la punta encontraréis una pequeña garita de piedra tallada con un ojo y una oreja: simbolizan la vigilancia permanente sobre la bocana del puerto. Desde aquí se abarca todo el Gran Puerto, con La Valeta enfrente y los astilleros a un lado. Es, con diferencia, la mejor vista de las Tres Ciudades, y al atardecer la piedra se vuelve naranja." },
+ { t:"Bormla (Cospicua)",
+   m:"La tercera ciudad",
+   x:"Es la más grande de las tres y la menos turística. Aquí vivía la gente que trabajaba en los astilleros, y eso hizo que fuera de las zonas más castigadas por los bombardeos de la Segunda Guerra Mundial. Hoy es un barrio tranquilo, con ropa tendida entre balcones de colores y vecinos charlando en la calle. Recorred sus bastiones y su paseo marítimo: se disfruta de una calma distinta a la de cualquier otro lugar de la isla." },
+ { t:"Vuelta y cierre",
+   m:"Ferry o dgħajsa",
+   x:"Cerramos donde empezamos. Si habéis venido en ferry, volved en dgħajsa, o al revés: son dos maneras distintas de ver el mismo puerto. Y si podéis elegir la hora, hacedlo al final de la tarde: la luz sobre la piedra caliza a esa hora es la razón por la que tanta gente se enamora de Malta. Gracias por acompañarnos." }
+];
+
+let actual = 0;
+const cont = document.getElementById('paradas');
+const soporteVoz = 'speechSynthesis' in window;
+if (!soporteVoz) document.getElementById('sinVoz').style.display = 'block';
+
+PARADAS.forEach(function (p, i) {
+  const d = document.createElement('article');
+  d.className = 'parada';
+  d.id = 'p' + i;
+  d.innerHTML = '<h2><span class="num">' + (i+1) + '</span>' + p.t + '</h2>' +
+    '<p class="meta">' + p.m + '</p>' +
+    '<p class="texto">' + p.x + '</p>' +
+    '<div class="controles">' +
+      (soporteVoz ? '<button class="b-play" data-i="' + i + '">▶ Escuchar</button>' : '') +
+    '</div>';
+  cont.appendChild(d);
+});
+
+function marcar(i) {
+  actual = Math.max(0, Math.min(PARADAS.length - 1, i));
+  document.querySelectorAll('.parada').forEach(function (e, n) {
+    e.classList.toggle('activa', n === actual);
+  });
+  document.getElementById('indicador').textContent = 'Parada ' + (actual+1) + ' de ' + PARADAS.length;
+  document.getElementById('p' + actual).scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function hablar(i) {
+  if (!soporteVoz) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(PARADAS[i].t + '. ' + PARADAS[i].x);
+  u.lang = 'es-ES';
+  u.rate = 0.95;
+  const voces = speechSynthesis.getVoices().filter(function(v){ return v.lang.indexOf('es') === 0; });
+  if (voces.length) u.voice = voces[0];
+  speechSynthesis.speak(u);
+  marcar(i);
+}
+
+cont.addEventListener('click', function (e) {
+  const b = e.target.closest('[data-i]');
+  if (b) hablar(parseInt(b.dataset.i, 10));
+});
+document.getElementById('siguiente').addEventListener('click', function(){ marcar(actual+1); });
+document.getElementById('anterior').addEventListener('click', function(){ marcar(actual-1); });
+document.getElementById('parar').addEventListener('click', function(){ if (soporteVoz) speechSynthesis.cancel(); });
+if (soporteVoz) speechSynthesis.onvoiceschanged = function(){};
+marcar(0);
+</script>
+</body>
+</html>
