@@ -1,0 +1,513 @@
+/* ==========================================================
+   Malta en Familia — hoja de estilos
+   Paleta: piedra caliza maltesa + mar Mediterráneo + colores luzzu
+   Tipografía: Marcellus (títulos) + Figtree (texto)
+   ========================================================== */
+
+:root {
+  --caliza: #F6ECD6;        /* fondo: globigerina, la piedra de Malta */
+  --caliza-osc: #EEDDB8;    /* tarjetas y bandas */
+  --caliza-borde: #D9C28E;
+  --tinta: #1C2830;         /* texto principal */
+  --tinta-suave: #45565F;
+  --mar: #0A5C8C;           /* azul principal, más intenso */
+  --mar-osc: #083049;
+  --luzzu-azul: #1C86C8;
+  --luzzu-amarillo: #F5A800;
+  --luzzu-rojo: #CF142B;    /* el rojo de la bandera maltesa */
+  --blanco: #FDFBF6;
+  --radio: 10px;
+  --ancho: 1060px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--caliza);
+  color: var(--tinta);
+  font-family: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+h1, h2, h3, .display {
+  font-family: "Marcellus", Georgia, serif;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--mar-osc);
+  letter-spacing: 0.01em;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); margin: 0 0 .4em; }
+h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); margin: 2em 0 .5em; }
+h3 { font-size: 1.25rem; margin: 1.6em 0 .4em; color: var(--mar); }
+
+a { color: var(--mar); text-underline-offset: 3px; }
+a:hover { color: var(--luzzu-rojo); }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--luzzu-amarillo);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+p { margin: 0 0 1em; }
+ul, ol { padding-left: 1.3em; }
+li { margin-bottom: .35em; }
+
+img { max-width: 100%; height: auto; border-radius: var(--radio); }
+
+/* ---------- Cabecera y franja luzzu ---------- */
+.cabecera {
+  background: var(--mar-osc);
+  color: var(--blanco);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.cabecera-inner {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: .7rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: var(--blanco);
+  text-decoration: none;
+  font-family: "Marcellus", Georgia, serif;
+  font-size: 1.35rem;
+}
+.marca svg { flex: none; }
+.marca:hover { color: var(--luzzu-amarillo); }
+
+/* La franja luzzu: los tres colores del casco de las barcas maltesas */
+.franja-luzzu {
+  height: 6px;
+  background: linear-gradient(to right,
+    var(--luzzu-azul) 0 33.3%,
+    var(--luzzu-amarillo) 33.3% 66.6%,
+    var(--luzzu-rojo) 66.6% 100%);
+}
+
+/* Banda de azulejos hidráulicos malteses (patrón SVG embebido) */
+.banda-azulejos {
+  height: 40px;
+  background-color: var(--caliza);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23F6ECD6'/%3E%3Ccircle cx='0' cy='0' r='11' fill='%230A5C8C'/%3E%3Ccircle cx='40' cy='0' r='11' fill='%230A5C8C'/%3E%3Ccircle cx='0' cy='40' r='11' fill='%230A5C8C'/%3E%3Ccircle cx='40' cy='40' r='11' fill='%230A5C8C'/%3E%3Ccircle cx='0' cy='0' r='5' fill='%23F5A800'/%3E%3Ccircle cx='40' cy='0' r='5' fill='%23F5A800'/%3E%3Ccircle cx='0' cy='40' r='5' fill='%23F5A800'/%3E%3Ccircle cx='40' cy='40' r='5' fill='%23F5A800'/%3E%3Crect x='13' y='13' width='14' height='14' fill='%23CF142B'/%3E%3Crect x='13' y='13' width='14' height='14' fill='%23CF142B' transform='rotate(45 20 20)'/%3E%3Ccircle cx='20' cy='20' r='4' fill='%23F5A800'/%3E%3Crect width='40' height='40' fill='none' stroke='%23D9C28E' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: 40px 40px;
+  background-repeat: repeat-x;
+  border-bottom: 3px solid var(--mar);
+}
+
+/* Figuras: fotos CC y fotos propias con su crédito */
+.figura {
+  margin: 1.6rem 0;
+  background: var(--blanco);
+  border: 1px solid var(--caliza-borde);
+  border-radius: var(--radio);
+  padding: .6rem;
+}
+.figura img {
+  width: 100%;
+  display: block;
+  border-radius: 6px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--caliza-osc);
+}
+.figura figcaption {
+  font-size: .85rem;
+  color: var(--tinta-suave);
+  padding: .5rem .3rem .1rem;
+}
+.figura figcaption .credito { font-style: italic; }
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.6rem 0;
+}
+.galeria .figura { margin: 0; }
+
+nav.principal { display: flex; flex-wrap: wrap; gap: .2rem; }
+nav.principal a {
+  color: var(--caliza);
+  text-decoration: none;
+  padding: .45rem .7rem;
+  border-radius: 6px;
+  font-size: .95rem;
+}
+nav.principal a:hover { background: var(--mar); color: var(--blanco); }
+nav.principal a[aria-current="page"] {
+  background: var(--luzzu-amarillo);
+  color: var(--mar-osc);
+  font-weight: 600;
+}
+.boton-menu {
+  display: none;
+  background: none;
+  border: 2px solid var(--caliza);
+  color: var(--caliza);
+  border-radius: 6px;
+  padding: .35rem .7rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+@media (max-width: 820px) {
+  .boton-menu { display: inline-block; }
+  nav.principal {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    padding-bottom: .6rem;
+  }
+  nav.principal.abierto { display: flex; }
+}
+
+/* ---------- Héroe ---------- */
+.heroe {
+  background:
+    linear-gradient(180deg, var(--caliza) 0%, #F3E3BF 45%, #A8D2E8 100%);
+  border-bottom: 6px solid var(--mar);
+  text-align: center;
+  padding: 3.2rem 1.2rem 3rem;
+}
+.heroe .cruz { margin-bottom: 1rem; }
+.heroe h1 {
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+.heroe p.lema {
+  font-size: 1.15rem;
+  color: var(--tinta-suave);
+  max-width: 680px;
+  margin: 0 auto 1.4rem;
+}
+.lema span { display: block; }
+.lema .l1 {
+  font-family: "Marcellus", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.5em;
+  color: var(--mar-osc);
+  margin-bottom: .35em;
+}
+.lema .l2 {
+  font-weight: 600;
+  color: var(--mar);
+  margin-bottom: .3em;
+}
+.lema .l3 { font-style: italic; }
+.heroe-mini {
+  padding: 2.2rem 1.2rem 1.8rem;
+  text-align: left;
+}
+.heroe-mini h1 { margin-bottom: .2em; }
+.heroe-mini p.lema { margin: 0; max-width: none; }
+
+/* ---------- Contenido ---------- */
+main { max-width: var(--ancho); margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+.lead { font-size: 1.15rem; color: var(--tinta-suave); }
+
+.titulo-cruz {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+.titulo-cruz svg { flex: none; }
+
+/* Rejilla de tarjetas */
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.1rem;
+  margin: 1.5rem 0;
+}
+.tarjeta {
+  background: var(--blanco);
+  border: 1px solid var(--caliza-borde);
+  border-top: 5px solid var(--mar);
+  border-radius: var(--radio);
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.tarjeta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(8, 48, 73, .12);
+}
+.tarjeta .icono {
+  font-size: 1.7rem;
+  line-height: 1;
+  margin-bottom: .35rem;
+}
+.tarjeta h3 { margin-top: 0; }
+.tarjeta p { flex: 1; }
+.tarjeta .ir {
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--mar);
+}
+.tarjeta .ir::after { content: " →"; }
+.tarjeta.amarilla { border-top-color: var(--luzzu-amarillo); }
+.tarjeta.roja { border-top-color: var(--luzzu-rojo); }
+.tarjeta.azul { border-top-color: var(--luzzu-azul); }
+
+/* Nota personal: aquí va la experiencia de la familia */
+.nota-personal {
+  background: var(--caliza-osc);
+  border-left: 6px solid var(--luzzu-amarillo);
+  border-radius: 0 var(--radio) var(--radio) 0;
+  padding: .9rem 1.1rem;
+  margin: 1.2rem 0;
+}
+.nota-personal .etiqueta {
+  display: block;
+  font-weight: 700;
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--luzzu-rojo);
+  margin-bottom: .3rem;
+}
+.pendiente { color: var(--tinta-suave); font-style: italic; }
+
+/* Aviso / dato práctico */
+.dato {
+  background: #E3EEF4;
+  border-left: 6px solid var(--luzzu-azul);
+  border-radius: 0 var(--radio) var(--radio) 0;
+  padding: .9rem 1.1rem;
+  margin: 1.2rem 0;
+}
+.dato .etiqueta {
+  display: block;
+  font-weight: 700;
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--mar);
+  margin-bottom: .3rem;
+}
+
+/* Enlaces de afiliado */
+.btn-afiliado {
+  display: inline-block;
+  background: var(--luzzu-rojo);
+  color: var(--blanco);
+  text-decoration: none;
+  font-weight: 600;
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  margin: .2rem .3rem .2rem 0;
+  font-size: .95rem;
+}
+.btn-afiliado:hover { background: var(--mar); color: var(--blanco); }
+.btn-afiliado.secundario { background: var(--mar); }
+.aviso-afiliado {
+  font-size: .85rem;
+  color: var(--tinta-suave);
+  border-top: 1px dashed var(--caliza-borde);
+  padding-top: .6rem;
+  margin-top: 2rem;
+}
+
+/* Tablas */
+/* Las tablas anchas se desplazan dentro de su caja en móvil.
+   El degradado del borde derecho avisa de que hay más columnas. */
+.tabla-envoltura {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.2rem 0;
+  background:
+    linear-gradient(to right, var(--caliza) 30%, rgba(246,236,214,0)) left center,
+    linear-gradient(to left,  var(--caliza) 30%, rgba(246,236,214,0)) right center,
+    radial-gradient(farthest-side at 0 50%, rgba(8,48,73,.18), rgba(8,48,73,0)) left center,
+    radial-gradient(farthest-side at 100% 50%, rgba(8,48,73,.18), rgba(8,48,73,0)) right center;
+  background-repeat: no-repeat;
+  background-size: 36px 100%, 36px 100%, 16px 100%, 16px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+.tabla-envoltura table { min-width: 34rem; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--blanco);
+  border-radius: var(--radio);
+  overflow: hidden;
+  font-size: .98rem;
+}
+th, td {
+  border: 1px solid var(--caliza-borde);
+  padding: .55rem .8rem;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--mar); color: var(--blanco); font-weight: 600; }
+tbody tr:nth-child(even) { background: var(--caliza); }
+
+/* Ficha de localidad / academia / excursión */
+.ficha {
+  background: var(--blanco);
+  border: 1px solid var(--caliza-borde);
+  border-radius: var(--radio);
+  padding: 1.2rem 1.4rem;
+  margin: 1.4rem 0;
+}
+.ficha h3 { margin-top: 0; }
+.ficha .meta {
+  font-size: .9rem;
+  color: var(--tinta-suave);
+  margin-bottom: .6rem;
+}
+.ficha.destacada { border: 2px solid var(--luzzu-amarillo); background: #FBF4E2; }
+.chip {
+  display: inline-block;
+  background: var(--caliza-osc);
+  border-radius: 999px;
+  padding: .15rem .7rem;
+  font-size: .85rem;
+  margin: 0 .3rem .3rem 0;
+  color: var(--tinta);
+}
+
+/* Pie */
+.pie {
+  background: var(--mar-osc);
+  color: var(--caliza);
+  margin-top: 2rem;
+}
+.pie-inner {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 2rem 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  font-size: .95rem;
+}
+.pie a { color: var(--luzzu-amarillo); }
+.pie h3 { color: var(--blanco); font-size: 1.05rem; margin: 0 0 .5em; }
+.pie ul { list-style: none; padding: 0; margin: 0; }
+.pie .legal {
+  border-top: 1px solid var(--mar);
+  text-align: center;
+  padding: .9rem;
+  font-size: .85rem;
+  color: #9FB6C2;
+}
+
+/* Miga de pan */
+.miga { font-size: .9rem; color: var(--tinta-suave); margin-bottom: 1rem; }
+.miga a { color: var(--tinta-suave); }
+
+@media print {
+  .cabecera, .pie, .btn-afiliado { display: none; }
+}
+
+/* ---------- Mapas (Leaflet) ---------- */
+.mapa {
+  height: 440px;
+  border: 2px solid var(--mar);
+  border-radius: var(--radio);
+  margin: 1.2rem 0 1.6rem;
+  z-index: 1;
+}
+@media (max-width: 600px) { .mapa { height: 340px; } }
+.botones-mapa { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0; }
+.btn-mapa {
+  background: var(--mar);
+  color: var(--blanco);
+  border: none;
+  border-radius: 999px;
+  padding: .5rem 1rem;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-mapa:hover { background: var(--luzzu-rojo); }
+.etiqueta-mapa {
+  background: var(--blanco);
+  border: 1.5px solid var(--mar);
+  border-radius: 6px;
+  color: var(--tinta);
+  font-family: "Figtree", sans-serif;
+  font-size: .8rem;
+  font-weight: 600;
+  padding: 1px 6px;
+}
+.etiqueta-aeropuerto { border-color: var(--luzzu-rojo); color: var(--luzzu-rojo); }
+.icono-avion {
+  font-size: 24px;
+  line-height: 30px;
+  text-align: center;
+  color: var(--luzzu-rojo);
+  text-shadow: 0 0 3px #fff, 0 0 3px #fff;
+}
+
+/* Variantes de figura para formatos especiales */
+.figura.alta img { aspect-ratio: 4 / 3; object-position: top; }
+.figura.libre img { aspect-ratio: auto; }
+.figura.vertical img { aspect-ratio: 3 / 4; object-position: center 65%; }
+
+/* ---- Galerías homogéneas: todas las fotos comparten proporción ---- */
+.galeria { align-items: stretch; }
+.galeria .figura {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.galeria .figura img {
+  aspect-ratio: 4 / 3 !important;   /* iguala verticales, panorámicas y horizontales */
+  object-fit: cover;
+  flex: none;
+}
+.galeria .figura.alto img { object-position: center 30%; }
+.galeria .figura figcaption { flex: 1; }
+/* Galería de tres: en pantallas anchas, las tres en fila */
+@media (min-width: 900px) {
+  .galeria.tres { grid-template-columns: repeat(3, 1fr); }
+}
+/* Figura ancha destacada, para panorámicas que van solas */
+.figura.panoramica img { aspect-ratio: 21 / 9; object-fit: cover; }
+
+/* Marcador temporal para datos que faltan antes de publicar.
+   Cuando no quede ningún <mark>, el blog está listo para ser público. */
+.figura figcaption mark {
+  background: var(--luzzu-rojo);
+  color: var(--blanco);
+  font-style: normal;
+  font-weight: 700;
+  padding: 0 .3em;
+  border-radius: 3px;
+}
+
+/* Contacto en el pie: separado del texto de presentación, sin competir con los menús */
+.contacto-pie {
+  margin-top: .9rem;
+  padding-top: .8rem;
+  border-top: 1px solid rgba(159, 182, 194, .3);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+/* La dirección es larga y la columna del pie es estrecha: se reduce lo justo
+   para que entre en una sola línea en vez de partirse por la mitad. */
+.contacto-pie a {
+  font-size: .82rem;
+  overflow-wrap: anywhere;
+  display: inline-block;
+}
