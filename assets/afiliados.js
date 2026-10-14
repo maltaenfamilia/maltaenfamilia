@@ -62,7 +62,17 @@ const AFILIADOS = {
     id: '',
     base: 'https://es.aliexpress.com',
     parametro: 'aff_trace_key'
-  }
+  },
+
+  // ---------- TRASLADOS Y VUELOS (vía Travelpayouts) ----------
+  // Estos llegan como enlaces cortos ya personalizados: el
+  // identificador va dentro del código, no en un parámetro.
+  // Llevan a la portada del buscador, no a una búsqueda concreta,
+  // así que los botones deben decir "buscar", no prometer un destino.
+  kiwitaxi:    { url: 'https://kiwitaxi.tpk.lu/AV5aKvSd' },   // traslados con conductor
+  gettransfer: { url: 'https://gettransfer.tpk.lu/n4nb23X2' },// traslados, alternativa
+  aviasales:   { url: 'https://aviasales.tpk.lu/PLrlQ2mT' },  // buscador de vuelos
+  kiwi:        { url: 'https://kiwi.tpk.lu/BnWyXZRd' }        // buscador de vuelos
 };
 
 /* ------------------------------------------------------------

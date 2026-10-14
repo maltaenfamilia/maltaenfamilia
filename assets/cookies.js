@@ -17,15 +17,27 @@
   var MESES = 6;
   var POLITICA = 'cookies.html';
 
-  /* ---- Scripts que dependen del consentimiento ---------- */
+  /* ---- Scripts que dependen del consentimiento ----------
+     En el HTML viven como <script type="text/plain" data-src="...">.
+     El navegador no ejecuta un script con ese type, así que la
+     etiqueta es visible para quien inspeccione la página (incluidos
+     los verificadores de las redes de afiliación) pero está inerte.
+     Aquí se convierten en scripts reales, y solo al aceptar. */
   function cargarTerceros() {
-    if (document.getElementById('tp-drive')) return;   // ya cargado
-    var s = document.createElement('script');
-    s.id = 'tp-drive';
-    s.async = 1;
-    s.setAttribute('data-cmp-ab', '2');
-    s.src = 'https://tpembars.com/NTg1MDkx.js?t=585091';
-    document.head.appendChild(s);
+    var pendientes = document.querySelectorAll(
+      'script[type="text/plain"][data-consentimiento="terceros"]');
+    for (var i = 0; i < pendientes.length; i++) {
+      var p = pendientes[i];
+      if (p.dataset.activado) continue;
+      var s = document.createElement('script');
+      s.async = 1;
+      s.src = p.getAttribute('data-src');
+      if (p.hasAttribute('data-cmp-ab')) {
+        s.setAttribute('data-cmp-ab', p.getAttribute('data-cmp-ab'));
+      }
+      document.head.appendChild(s);
+      p.dataset.activado = '1';
+    }
   }
 
   /* ---- Lectura y escritura de la decisión --------------- */
