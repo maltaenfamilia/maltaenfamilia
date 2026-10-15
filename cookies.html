@@ -68,13 +68,15 @@
 Algunas las necesita la propia página para funcionar; otras las instalan servicios externos.</p>
 
 <h2>Qué usa este blog</h2>
-<p>El blog <strong>no instala cookies propias de seguimiento</strong> ni mide vuestras visitas
-por su cuenta. Lo único que guarda en vuestro navegador es la decisión que toméis sobre este
-aviso, para no volver a preguntaros en cada página.</p>
+<p>El blog <strong>no instala cookies propias de seguimiento</strong>. Lo único que guarda en
+vuestro navegador es la decisión que toméis sobre este aviso, para no volver a preguntaros en cada
+página. Sí contamos cuántas visitas recibe cada página, pero con una herramienta sin cookies que
+no identifica a nadie ni os sigue por otras webs.</p>
 <div class="tabla-envoltura"><table>
 <thead><tr><th>Qué es</th><th>Quién la pone</th><th>Para qué</th><th>Cuánto dura</th></tr></thead>
 <tbody>
 <tr><td><code>mef-cookies</code></td><td>Este blog</td><td>Recordar si aceptasteis o rechazasteis. No identifica a nadie ni sale de vuestro navegador</td><td>6 meses</td></tr>
+<tr><td>Cloudflare Web&nbsp;Analytics</td><td>Cloudflare</td><td>Contar visitas por página. No usa cookies, no almacena nada en vuestro navegador y no permite identificaros ni seguiros fuera de este blog</td><td>No aplica</td></tr>
 <tr><td>Cookies de Travelpayouts</td><td>Travelpayouts (red de afiliación)</td><td>Atribuir una reserva al blog si llegáis a ella desde uno de nuestros enlaces, para que recibamos la comisión</td><td>Según su propia política</td></tr>
 </tbody>
 </table></div>
@@ -137,5 +139,8 @@ funciona para cualquier web, no solo para esta.</p>
 <script src="assets/site.js"></script>
 <script src="assets/afiliados.js"></script>
 
+<!-- Cloudflare Web Analytics · medición sin cookies, no requiere consentimiento -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "ad40e791ce0f4aceba93b1a6a65e7d37"}'></script>
 </body>
 </html>
