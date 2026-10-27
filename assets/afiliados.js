@@ -51,7 +51,7 @@ const AFILIADOS = {
   // ---------- AMAZON ----------
   // Alta: afiliados.amazon.es → te dan un "tag" (ej. maltafamilia-21)
   amazon: {
-    id: '',                                   // ← pega aquí tu tag
+    id: 'maltaenfamili-21',                   // ← tu tag de Amazon España
     base: 'https://www.amazon.es',
     parametro: 'tag'
   },
