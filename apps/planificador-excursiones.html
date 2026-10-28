@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planificador de excursiones · Malta en Familia</title>
+<meta name="description" content="Las nueve excursiones que hicimos en Malta, sobre el mapa. Elegid las vuestras y os decimos cuántos días necesitáis y qué hay que reservar antes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+ --caliza:#F6ECD6; --caliza-osc:#EEDDB8; --caliza-borde:#D9C28E;
+ --tinta:#1C2830; --tinta-suave:#45565F; --mar:#0A5C8C; --mar-osc:#083049;
+ --azul:#1C86C8; --amarillo:#F5A800; --rojo:#CF142B; --blanco:#FDFBF6;
+ padding-top:env(safe-area-inset-top,0px); box-sizing:border-box;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--caliza);color:var(--tinta);
+ font-family:"Figtree",system-ui,-apple-system,sans-serif;line-height:1.6}
+h1,h2,h3{font-family:"Marcellus",Georgia,serif;font-weight:400;color:var(--mar-osc);line-height:1.2}
+a{color:var(--mar);text-underline-offset:3px}
+
+header{background:var(--mar-osc);color:var(--blanco);padding:1rem 1.2rem}
+header h1{color:var(--blanco);margin:0;font-size:1.45rem}
+header p{margin:.3rem 0 0;font-size:.9rem;color:#B9D2E0}
+header a{color:var(--amarillo)}
+.franja{height:6px;background:linear-gradient(to right,var(--azul) 0 33.3%,var(--amarillo) 33.3% 66.6%,var(--rojo) 66.6% 100%)}
+
+main{max-width:1180px;margin:0 auto;padding:1.2rem}
+.intro{font-size:1.05rem;color:var(--tinta-suave);max-width:70ch;margin:0 0 1.2rem}
+
+/* ---- Filtros ---- */
+.filtros{display:flex;flex-wrap:wrap;gap:.45rem;margin:0 0 1rem;align-items:center}
+.filtros .etq{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;
+ font-weight:700;color:var(--tinta-suave);margin-right:.2rem}
+.chip{background:var(--blanco);border:1.5px solid var(--caliza-borde);color:var(--tinta);
+ border-radius:999px;padding:.35rem .9rem;font:inherit;font-size:.9rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--mar);border-color:var(--mar);color:var(--blanco);font-weight:600}
+.chip:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+
+/* ---- Distribución ---- */
+.columnas{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.4rem;align-items:start}
+@media (max-width:900px){.columnas{grid-template-columns:1fr}}
+
+#mapa{height:460px;border:2px solid var(--mar);border-radius:10px;background:var(--caliza-osc);
+ position:sticky;top:1rem}
+@media (max-width:900px){#mapa{height:300px;position:static}}
+.sin-mapa{display:none;background:#E3EEF4;border-left:6px solid var(--azul);
+ border-radius:0 10px 10px 0;padding:.8rem 1rem;font-size:.92rem;margin-bottom:1rem}
+
+/* ---- Fichas ---- */
+.lista{display:flex;flex-direction:column;gap:.9rem}
+.exc{background:var(--blanco);border:1px solid var(--caliza-borde);border-left:5px solid var(--mar);
+ border-radius:10px;padding:.9rem 1.1rem}
+.exc.elegida{border-left-color:var(--amarillo);box-shadow:0 4px 14px rgba(8,48,73,.13)}
+.exc h3{margin:0 0 .15rem;font-size:1.12rem}
+.exc .meta{font-size:.84rem;color:var(--tinta-suave);margin:0 0 .5rem}
+.exc p{margin:.4rem 0}
+.exc .como{font-size:.9rem;color:var(--tinta-suave)}
+.tipo{display:inline-block;background:var(--caliza-osc);border-radius:999px;
+ padding:.1rem .6rem;font-size:.78rem;margin-right:.3rem}
+.aviso{display:block;background:#FBE9E7;border-left:4px solid var(--rojo);
+ border-radius:0 6px 6px 0;padding:.4rem .7rem;font-size:.86rem;margin:.4rem 0 0}
+.acciones{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.7rem}
+.btn{font:inherit;font-size:.9rem;font-weight:600;border-radius:999px;padding:.45rem 1rem;
+ cursor:pointer;border:2px solid var(--mar);background:var(--mar);color:var(--blanco)}
+.btn.sec{background:var(--blanco);color:var(--mar)}
+.btn:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+.exc .detalle{font-size:.9rem}
+
+/* ---- Panel del plan ---- */
+.plan{position:sticky;bottom:0;z-index:40;background:var(--mar-osc);color:var(--blanco);
+ border-top:5px solid var(--amarillo);padding:.8rem 1.2rem;
+ padding-bottom:calc(.8rem + env(safe-area-inset-bottom,0px))}
+.plan-inner{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+.plan strong{color:var(--amarillo)}
+.plan .resumen{font-size:.95rem}
+.plan .vacio{color:#B9D2E0}
+.plan .btn{border-color:var(--amarillo);background:var(--amarillo);color:var(--mar-osc)}
+.plan .btn.sec{background:transparent;color:var(--blanco);border-color:var(--blanco)}
+#avisosPlan{max-width:1180px;margin:.5rem auto 0;font-size:.88rem;color:#FFE2A8}
+#avisosPlan li{margin:.15rem 0}
+
+.pie{text-align:center;font-size:.86rem;color:var(--tinta-suave);padding:1.6rem 1rem 1rem}
+@media print{.plan,.filtros,#mapa{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Planificador de excursiones</h1>
+  <p>Las nueve que hicimos en un mes · <a href="../excursiones.html">volver al blog</a></p>
+</header>
+<div class="franja"></div>
+
+<main>
+  <p class="intro">Marcad las que os interesen y os decimos <strong>cuántos días necesitáis</strong>
+  y <strong>qué hay que reservar con antelación</strong>. Nada se envía a ningún sitio: el plan
+  vive en esta pantalla y podéis copiarlo cuando queráis.</p>
+
+  <div class="sin-mapa" id="sinMapa">No se ha podido cargar el mapa, probablemente por falta de
+  conexión. El listado de abajo funciona igualmente.</div>
+
+  <div class="filtros" role="group" aria-label="Filtros">
+    <span class="etq">Duración</span>
+    <button class="chip" data-filtro="dur" data-valor="0.5" aria-pressed="false">Medio día</button>
+    <button class="chip" data-filtro="dur" data-valor="1" aria-pressed="false">Día completo</button>
+    <span class="etq">Tipo</span>
+    <button class="chip" data-filtro="tipo" data-valor="ciudad" aria-pressed="false">Ciudades</button>
+    <button class="chip" data-filtro="tipo" data-valor="mar" aria-pressed="false">Mar y playa</button>
+    <button class="chip" data-filtro="tipo" data-valor="arqueologia" aria-pressed="false">Arqueología</button>
+  </div>
+
+  <div class="columnas">
+    <div id="mapa" role="application" aria-label="Mapa de las excursiones"></div>
+    <div class="lista" id="lista"></div>
+  </div>
+
+  <p class="pie">Hecho por <a href="../index.html">Malta en Familia</a> · Los tiempos y precios
+  son los de nuestra estancia, en verano de 2026.</p>
+</main>
+
+<div class="plan">
+  <div class="plan-inner">
+    <div class="resumen" id="resumen"><span class="vacio">No habéis elegido ninguna excursión todavía.</span></div>
+    <div>
+      <button class="btn" id="copiar">Copiar mi plan</button>
+      <button class="btn sec" id="limpiar">Empezar de nuevo</button>
+    </div>
+  </div>
+  <ul id="avisosPlan"></ul>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* Datos sacados de las fichas del blog: nada inventado aquí.
+   dur: 0.5 = media jornada · 1 = día completo */
+const EXCURSIONES = [
+ { id:'la-valeta', n:'La Valeta', lat:35.8989, lng:14.5146, dur:0.5, tipo:['ciudad'],
+   meta:'Varias visitas · Patrimonio de la Humanidad',
+   res:'La capital cabe en un kilómetro: la Concatedral con sus dos Caravaggios, el Palacio del Gran Maestre y los mejores miradores del Mediterráneo.',
+   como:'Ferry desde Sliema (10 min, incluido con la Tallinja Card) o autobús: todas las líneas pasan por la estación central.',
+   avisos:[{t:'No intentéis verla de una sentada: id varios días y a distintas horas. Con cruceros atracados, las calles principales se vuelven incómodas.'}] },
+
+ { id:'mdina-rabat', n:'Mdina y Rabat', lat:35.8858, lng:14.4028, dur:0.5, tipo:['ciudad'],
+   meta:'Media jornada · la ciudad del silencio',
+   res:'Ciudad amurallada sin coches, con 250 habitantes dentro. Rabat, pegado, tiene las catacumbas y las mejores pastizzerias.',
+   como:'Buses directos desde La Valeta, o desde Sliema y St. Julian’s (45–60 min; en verano el tráfico lo alarga).',
+   avisos:[{t:'Mejor por la tarde: baja el calor y se marchan los autobuses turísticos.'}] },
+
+ { id:'tres-ciudades', n:'Las Tres Ciudades', lat:35.8878, lng:14.5225, dur:0.5, tipo:['ciudad'],
+   meta:'Medio día · Birgu, Senglea y Bormla',
+   res:'Donde se instalaron los Caballeros antes de La Valeta. Menos turistas, más vida local y las mejores vistas de la capital.',
+   como:'Ferry desde La Valeta (5 min) o dgħajsa, el bote tradicional. Nuestro truco: ir en uno y volver en el otro.',
+   avisos:[{t:'Adoquines y cuestas: calzado cómodo. Dejadlo para la tarde, el sol de mediodía en las subidas de Senglea no perdona.'}] },
+
+ { id:'comino', n:'Comino y el Blue Lagoon', lat:36.0136, lng:14.3236, dur:1, tipo:['mar'],
+   meta:'Día completo · la foto de Malta',
+   res:'La laguna de aguas irreales entre Comino y Cominotto. En verano se masifica de mediodía en adelante.',
+   como:'Lanzaderas desde Ċirkewwa (10 min), o barcos desde Bugibba y desde el paseo de Sliema. Con niños, el minicrucero de día completo desde Sliema es lo más cómodo.',
+   avisos:[{previo:true, t:'Reserva obligatoria: desde 2025 hay que registrarse en blcomino.com y elegir franja horaria, incluso yendo en excursión organizada.'},
+           {t:'Llevadlo todo: no hay tiendas ni apenas sombra. Y una prenda de abrigo para la vuelta en barco.'}] },
+
+ { id:'gozo', n:'Gozo', lat:36.0444, lng:14.2397, dur:1, tipo:['mar','ciudad'],
+   meta:'Día completo (o más) · la isla tranquila',
+   res:'Más verde, más rural y más pausada. La Ciudadela de Victoria, la playa roja de Ramla y Dwejra con su Blue Hole.',
+   como:'Ferry desde Ċirkewwa (25 min, se paga al volver) o fast ferry desde La Valeta. En Gozo: bus, tuk-tuk, quad o coche.',
+   avisos:[{t:'El ferry a Gozo no entra en la Tallinja Card: se paga aparte, ida y vuelta.'},
+           {t:'Varias guías recomiendan dormir allí una noche para no dejarse nada.'}] },
+
+ { id:'marsaxlokk', n:'Marsaxlokk y St. Peter’s Pool', lat:35.8419, lng:14.5431, dur:0.5, tipo:['mar'],
+   meta:'Medio día · pescadores y saltos al agua',
+   res:'El pueblo pesquero de los luzzus, con el mejor pescado fresco a precio razonable de la isla.',
+   como:'Buses 81 u 85: unos 50 minutos desde Sliema con transbordo, algo más de media hora desde La Valeta.',
+   avisos:[{t:'Google dice 25 minutos andando hasta St. Peter’s Pool, pero son 45 y no es llano. Acercaos en taxi lo máximo posible.'},
+           {t:'El mercado del domingo se masifica: entre semana se disfruta más.'}] },
+
+ { id:'blue-grotto', n:'Blue Grotto y templos megalíticos', lat:35.8206, lng:14.4556, dur:0.5, tipo:['mar','arqueologia'],
+   meta:'Media jornada · la costa sur · hay que madrugar',
+   res:'Siete cuevas marinas bajo los acantilados del sur, y a un paso los templos de Ħaġar Qim y Mnajdra.',
+   como:'Autobús desde La Valeta hacia Żurrieq/Qrendi; la línea 74 une la parada de los templos con la del embarcadero. Pasan cada hora aproximadamente.',
+   avisos:[{previo:true, t:'El efecto azul solo se da a primera hora: hay que estar en el embarcadero sobre las 8:00–9:00.'},
+           {t:'Con oleaje se suspenden las salidas. Mirad el parte y tened el mirador de la carretera como plan B.'}] },
+
+ { id:'hipogeo', n:'Hipogeo de Ħal Saflieni', lat:35.8694, lng:14.5072, dur:0.5, tipo:['arqueologia'],
+   meta:'Media mañana · reserva con semanas de antelación',
+   res:'Necrópolis subterránea de más de 6.000 años, en tres niveles. Probablemente el lugar más extraordinario de Malta.',
+   como:'Buses de la zona sur hacia Paola (líneas 81 a 85 desde Sliema, unos 25 minutos). Los templos de Tarxien quedan a un paseo corto.',
+   avisos:[{previo:true, t:'Reservad antes de viajar: aforo muy reducido y en temporada alta las plazas se agotan con semanas de antelación. Se reserva en Heritage Malta.'},
+           {t:'No está recomendado para los más pequeños.'}] },
+
+ { id:'playas-norte', n:'Playas del norte', lat:35.9564, lng:14.3622, dur:1, tipo:['mar'],
+   meta:'Días de playa · Mellieha, Golden Bay, Għajn Tuffieħa',
+   res:'Las mejores arenas de la isla. Mellieha Bay es la más grande y la más segura con niños; Golden Bay, la más fotogénica y la más llena.',
+   como:'Buses 212 o 222 desde Sliema hasta Mellieha (unos 55 min, cada media hora) y líneas locales que acercan a Golden Bay o Għadira en 5–10 minutos.',
+   avisos:[{t:'Elegid playa según el viento del día, y llegad antes de las 10:00–10:30 en verano si queréis sitio.'}] }
+];
+
+const TIPOS = { ciudad:'Ciudad', mar:'Mar y playa', arqueologia:'Arqueología' };
+
+let elegidas = new Set();
+let filtros = { dur:new Set(), tipo:new Set() };
+let marcadores = {};
+let mapa = null;
+
+/* ---------- Mapa ---------- */
+function construirMapa() {
+  if (typeof L === 'undefined') { document.getElementById('sinMapa').style.display='block'; return; }
+  mapa = L.map('mapa', { scrollWheelZoom:false }).setView([35.95, 14.40], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:18, attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(mapa);
+  EXCURSIONES.forEach(function (e) {
+    const m = L.marker([e.lat, e.lng]).addTo(mapa).bindPopup(
+      '<strong>' + e.n + '</strong><br>' + e.meta);
+    m.on('click', function(){
+      const f = document.getElementById('exc-' + e.id);
+      if (f) f.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+    marcadores[e.id] = m;
+  });
+}
+
+/* ---------- Listado ---------- */
+function visible(e) {
+  const d = filtros.dur, t = filtros.tipo;
+  if (d.size && !d.has(String(e.dur))) return false;
+  if (t.size && !e.tipo.some(function(x){ return t.has(x); })) return false;
+  return true;
+}
+
+function pintarLista() {
+  const cont = document.getElementById('lista');
+  cont.innerHTML = '';
+  const vis = EXCURSIONES.filter(visible);
+  if (!vis.length) {
+    cont.innerHTML = '<p>Ninguna excursión coincide con esos filtros.</p>';
+  }
+  vis.forEach(function (e) {
+    const el = document.createElement('article');
+    el.className = 'exc' + (elegidas.has(e.id) ? ' elegida' : '');
+    el.id = 'exc-' + e.id;
+    el.innerHTML =
+      '<h3>' + e.n + '</h3>' +
+      '<p class="meta">' + e.meta + '</p>' +
+      '<p>' + e.tipo.map(function(t){ return '<span class="tipo">' + TIPOS[t] + '</span>'; }).join('') + '</p>' +
+      '<p class="detalle">' + e.res + '</p>' +
+      '<p class="como"><strong>Cómo llegar:</strong> ' + e.como + '</p>' +
+      e.avisos.map(function(a){ return '<span class="aviso">' + a.t + '</span>'; }).join('') +
+      '<div class="acciones">' +
+        '<button class="btn' + (elegidas.has(e.id) ? ' sec' : '') + '" data-elegir="' + e.id + '">' +
+          (elegidas.has(e.id) ? 'Quitar del plan' : 'Añadir al plan') + '</button>' +
+        '<a href="../excursiones.html#' + e.id + '">Leerlo completo en el blog</a>' +
+      '</div>';
+    cont.appendChild(el);
+  });
+}
+
+/* ---------- Plan ---------- */
+function pintarPlan() {
+  const sel = EXCURSIONES.filter(function(e){ return elegidas.has(e.id); });
+  const res = document.getElementById('resumen');
+  const avisos = document.getElementById('avisosPlan');
+  avisos.innerHTML = '';
+
+  if (!sel.length) {
+    res.innerHTML = '<span class="vacio">No habéis elegido ninguna excursión todavía.</span>';
+    return;
+  }
+  const jornadas = sel.reduce(function(a,e){ return a + e.dur; }, 0);
+  res.innerHTML = '<strong>' + sel.length + '</strong> ' +
+    (sel.length === 1 ? 'excursión' : 'excursiones') +
+    ' · necesitáis <strong>' + enDias(jornadas) + '</strong>';
+
+  sel.forEach(function (e) {
+    e.avisos.filter(function(a){ return a.previo; }).forEach(function (a) {
+      const li = document.createElement('li');
+      li.textContent = e.n + ' → ' + a.t;
+      avisos.appendChild(li);
+    });
+  });
+}
+
+function enDias(j) {
+  const enteros = Math.floor(j);
+  const medio = j % 1 >= 0.5;
+  if (j === 0.5) return 'media jornada';
+  if (!medio) return enteros + (enteros === 1 ? ' día' : ' días');
+  if (enteros === 0) return 'media jornada';
+  return enteros + (enteros === 1 ? ' día' : ' días') + ' y medio';
+}
+
+function texto() {
+  const sel = EXCURSIONES.filter(function(e){ return elegidas.has(e.id); });
+  const jornadas = sel.reduce(function(a,e){ return a + e.dur; }, 0);
+  let t = 'MI PLAN DE EXCURSIONES EN MALTA\n';
+  t += 'Necesito ' + enDias(jornadas) + '\n\n';
+  sel.forEach(function (e, i) {
+    t += (i+1) + '. ' + e.n + ' (' + e.meta + ')\n';
+    t += '   Cómo llegar: ' + e.como + '\n';
+    e.avisos.forEach(function(a){ t += '   ! ' + a.t + '\n'; });
+    t += '\n';
+  });
+  t += 'Plan creado en maltaenfamilia.com\n';
+  return t;
+}
+
+/* ---------- Eventos ---------- */
+document.getElementById('lista').addEventListener('click', function (ev) {
+  const b = ev.target.closest('[data-elegir]');
+  if (!b) return;
+  const id = b.dataset.elegir;
+  if (elegidas.has(id)) elegidas.delete(id); else elegidas.add(id);
+  pintarLista(); pintarPlan();
+  const m = marcadores[id];
+  if (m && mapa) mapa.setView(m.getLatLng(), 12, {animate:true});
+});
+
+document.querySelectorAll('.chip').forEach(function (c) {
+  c.addEventListener('click', function () {
+    const conj = filtros[c.dataset.filtro];
+    const v = c.dataset.valor;
+    if (conj.has(v)) { conj.delete(v); c.setAttribute('aria-pressed','false'); }
+    else { conj.add(v); c.setAttribute('aria-pressed','true'); }
+    pintarLista();
+  });
+});
+
+document.getElementById('limpiar').addEventListener('click', function () {
+  elegidas.clear(); pintarLista(); pintarPlan();
+});
+
+document.getElementById('copiar').addEventListener('click', function () {
+  const b = this;
+  if (!elegidas.size) { b.textContent = 'Elegid alguna primero'; setTimeout(function(){ b.textContent='Copiar mi plan'; }, 1800); return; }
+  const t = texto();
+  function ok(){ b.textContent = '¡Copiado!'; setTimeout(function(){ b.textContent='Copiar mi plan'; }, 1800); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(ok, respaldo);
+  } else { respaldo(); }
+  function respaldo() {
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); ok(); } catch (e) { b.textContent = 'No se pudo copiar'; }
+    document.body.removeChild(ta);
+  }
+});
+
+construirMapa();
+pintarLista();
+pintarPlan();
+</script>
+
+<!-- Cloudflare Web Analytics · medición sin cookies, no requiere consentimiento -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "ad40e791ce0f4aceba93b1a6a65e7d37"}'></script>
+</body>
+</html>
